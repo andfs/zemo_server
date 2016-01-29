@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-br" class="no-js" ng-app="testeForge">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>zume</title>
+	<meta name="description" content="Encontre vagas para estacionar com a ajuda da comunidade" />
+	<meta name="keywords" content="zume, vaga, estacionar, estacionamento, faixa-azul, faixa azul" />
+	
+	<script src="scripts/vendor/modernizr-2.8.3.min.js"></script>
+    <link href="styles/bootstrap.css" rel="stylesheet" media="screen">
+    <link href="styles/jquery.fancybox.css" rel="stylesheet">
+	<link href="styles/flickity.css" rel="stylesheet" >
+	<link href="styles/animate.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
+	<link href='https://fonts.googleapis.com/css?family=Orbitron' rel='stylesheet' type='text/css'>
+	<link href="styles/styles.css" rel="stylesheet">
+	<link href="styles/queries.css" rel="stylesheet">
+    
+    <!--[if lt IE 9]>
+	<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+	<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+	<![endif]-->
+</head>
+<body>
+   	<!--[if lt IE 7]>
+	<p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+	<![endif]-->
+	<!-- open/close -->
+	<header>
+		<section class="hero">
+			<div class="texture-overlay"></div>
+			<div class="container">
+				<div class="row nav-wrapper">
+					<div class="col-md-6 col-sm-6 col-xs-6 text-left">
+						<a href="#" class="logofont">zume</a>
+					</div>
+					<div class="col-md-6 col-sm-6 col-xs-6 text-right navicon">
+						<p>MENU</p><span id="trigger-overlay" class="nav_slide_button nav-toggle" href="#"><span></span></span>
+					</div>
+				</div>
+				<div class="row hero-content">
+					<div class="col-md-12">
+						<h1 class="animated fadeInDown">Ta sem saber aonde estacionar? Ta difícil de achar vaga? Não encontra um estacionamento com preço bom? <span class="logofont">ZUME</span></h1>
+						<a href="#features" class="use-btn animated fadeInUp">Para donos de estacionamento</a> <a href="#about" class="learn-btn animated fadeInUp">Saiba mais <i class="fa fa-arrow-down"></i></a>
+					</div>
+				</div>
+			</div>
+		</section>
+	</header>
+
+	
+	<div id="main" ng-view>
+	</div>
+
+
+	
+	<footer>
+		<div class="container">
+			<div class="row">
+				<div class="col-md-5">
+					<h1 class="footer-logo">
+					<a href="#" class="logofont">zume</a>
+					</h1>
+					<p>© ATech - <a href="#">Licence</a> - Designed &amp; Developed by <a href="http://www.peterfinlan.com/">ATech</a></p>
+				</div>
+				<div class="col-md-7">
+					<ul class="footer-nav">
+						<li><a href="#about">Sobre</a></li>
+						<li><a href="#features">Estacionamentos</a></li>
+						<li><a href="#showcase">zume</a></li>
+						<li><a href="#download">Download</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</footer>
+	<div class="overlay overlay-boxify">
+		<nav>
+			<ul>
+				<li><a href="#about"><i class="fa fa-heart"></i>About</a></li>
+				<li><a href="#features"><i class="fa fa-flash"></i>Features</a></li>
+			</ul>
+			<ul>
+				<li><a href="#screenshots"><i class="fa fa-desktop"></i>Screenshots</a></li>
+				<li><a href="#download"><i class="fa fa-download"></i>Download</a></li>
+			</ul>
+		</nav>
+	</div>
+    
+    <script src="scripts/vendor/jquery-2.1.1.js"></script>
+    <script src="scripts/toucheffects-min.js"></script>
+    <script src="scripts/flickity.pkgd.min.js"></script>
+	<script src="scripts/jquery.fancybox.pack.js"></script>
+	<!-- Include all compiled plugins (below), or include individual files as needed -->
+	<script src="scripts/retina.js"></script>
+	<script src="scripts/waypoints.min.js"></script>
+    <script src="scripts/vendor/bootstrap.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?libraries=places"></script>
+    <script src="scripts/scripts.js"></script>
+    
+    <script src="scripts/vendor/angular.js"></script>
+    <script src="scripts/vendor/angular-route.js"></script>
+    <script src="scripts/vendor/angular-resource.js"></script>
+    <script src="scripts/app.js"></script>
+    <script src="scripts/offcanvas.js"></script>
+    <script src="scripts/directives/datepicker.js"></script>
+    <script src="scripts/directives/timepicker.js"></script>
+    <script src="scripts/directives/datetimepicker.js"></script>
+    <script src="scripts/filters/startFromFilter.js"></script>
+    <script src="scripts/filters/genericSearchFilter.js"></script>
+    <script src="scripts/services/flash.js"></script>
+    <script src="scripts/services/locationParser.js"></script>
+    <script src="scripts/controllers/flashController.js"></script>
+    <script src="scripts/services/EstacionamentoFactory.js"></script>
+    <script src="scripts/controllers/newEstacionamentoController.js"></script>
+    <script src="scripts/controllers/searchEstacionamentoController.js"></script>
+    <script src="scripts/controllers/editEstacionamentoController.js"></script>
+</body>
+</html>

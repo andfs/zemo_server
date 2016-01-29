@@ -1,0 +1,78 @@
+<meta charset="UTF-8">
+<form id="EstacionamentoForm" name="EstacionamentoForm" class="form-horizontal" role="form">
+    <div class="container">
+		<div class="row">	
+			<div class="col-md-12">
+				<div class="form-group">
+					<h3 class="control-label">Cadastro de Estacionamento</h3>
+				</div>
+				<div class="form-group" ng-class="{'has-error': EstacionamentoForm.nome.$invalid}">
+			        <label for="nome" class="col-sm-2 control-label">Nome</label>
+			        <div id="nomeControls" class="col-sm-10">
+			            <input id="nome" name="nome" type="text" class="form-control" ng-model="estacionamento.nome" placeholder="Nome do Estacionamento"></input>
+			        </div>
+			    </div>
+			
+			    <div class="form-group" ng-class="{'has-error': EstacionamentoForm.cnpj.$invalid}">
+			        <label for="cnpj" class="col-sm-2 control-label">Cnpj</label>
+			        <div id="cnpjControls" class="col-sm-10">
+			            <input id="cnpj" name="cnpj" type="text" class="form-control" ng-model="estacionamento.cnpj" placeholder="CNPJ do Estacionamento"></input>
+			        </div>
+			    </div>
+			
+			    <div class="form-group" ng-class="{'has-error': EstacionamentoForm.valorHora.$invalid}">
+			        <label for="valorHora" class="col-sm-2 control-label">Valor Hora</label>
+			        <div id="valorHoraControls" class="col-sm-10">
+			            <input id="valorHora" name="valorHora" type="text" class="form-control" ng-model="estacionamento.valorHora" placeholder="Valor da Hora"></input>
+			        </div>
+			    </div>
+			
+			    <div class="form-group" ng-class="{'has-error': EstacionamentoForm.valorFracao.$invalid}">
+			        <label for="valorFracao" class="col-sm-2 control-label">Valor Fração</label>
+			        <div id="valorFracaoControls" class="col-sm-10">
+			            <input id="valorFracao" name="valorFracao" type="text" class="form-control" ng-model="estacionamento.valorFracao" placeholder="Valor da Fraçao"></input>
+			        </div>
+			    </div>
+			    
+			    <div class="form-group" ng-class="{'has-error': EstacionamentoForm.endereco.$invalid}">
+			        <label for="endereco" class="col-sm-2 control-label">Endereço</label>
+			        <div id="enderecoControls" class="col-sm-10">
+			            <input id="endereco" name="endereco" type="text" class="form-control" ng-model="estacionamento.endereco" placeholder="Endereço do Estacionamento "></input>
+			        </div>
+			    </div>
+			    
+			    <div class="form-group" ng-class="{'has-error': EstacionamentoForm.endereco.$invalid}">
+			        <label for="endereco" class="col-sm-2 control-label">Nº</label>
+			        <div id="enderecoNControls" class="col-sm-8">
+			            <input id="n" name="n" type="text" class="form-control" ng-model="estacionamento.n" placeholder="Nº" ng-blur="getLatLong()"></input>
+			        </div>
+			        <div id="enderecoNbControls" class="col-sm-2">
+			            <button class="btn btn-primary">OK</button>
+			        </div>
+			    </div>
+			
+			    <div class="form-group" ng-class="{'has-error': EstacionamentoForm.latitude.$invalid}">
+			        <label for="latitude" class="col-sm-2 control-label">Latitude</label>
+			        <div id="latitudeControls" class="col-sm-10">
+			            <input id="latitude" disabled name="latitude" type="number" class="form-control" ng-model="estacionamento.latitude" ></input>
+			        </div>
+			    </div>
+			
+			    <div class="form-group" ng-class="{'has-error': EstacionamentoForm.longitude.$invalid}">
+			        <label for="longitude" class="col-sm-2 control-label">Longitude</label>
+			        <div id="longitudeControls" class="col-sm-10">
+			            <input id="longitude" disabled name="longitude" type="number" class="form-control" ng-model="estacionamento.longitude" ></input>
+			        </div>
+			    </div>
+			
+			
+			    <div class="form-group">
+			        <div class="col-sm-offset-2 col-sm-10">
+			            <button id="saveEstacionamento" name="saveEstacionamento" class="btn btn-primary" ng-disabled="isClean() || EstacionamentoForm.$invalid" ng-click="save()"><span class="glyphicon glyphicon-ok-sign"></span> Salvar</button>
+			            <button id="cancel" name="cancel" class="btn btn-default" ng-click="cancel()"><span class="glyphicon glyphicon-remove-sign"></span> Cancelar</button>
+			        </div>
+			    </div>
+			</div>
+		</div>
+	</div>
+</form>
