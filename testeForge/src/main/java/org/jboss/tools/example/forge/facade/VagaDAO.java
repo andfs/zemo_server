@@ -109,10 +109,10 @@ public class VagaDAO {
 	{
 		MongoCollection<Document> vagasCollection = mongoDatabase.getCollection("vagas");
 		BasicDBList geoCoord = new BasicDBList();
-		geoCoord.add(((JsonObject)bounds.get("northeast")).get("longitude"));
-		geoCoord.add(((JsonObject)bounds.get("northeast")).get("latitude"));
-		geoCoord.add(((JsonObject)bounds.get("southwest")).get("longitude"));
-		geoCoord.add(((JsonObject)bounds.get("southwest")).get("latitude"));
+		geoCoord.add(((JsonObject)bounds.get("northeast")).get("lng"));
+		geoCoord.add(((JsonObject)bounds.get("northeast")).get("lat"));
+		geoCoord.add(((JsonObject)bounds.get("southwest")).get("lng"));
+		geoCoord.add(((JsonObject)bounds.get("southwest")).get("lat"));
 		
 		BasicDBList geoParams = new BasicDBList();
 	    geoParams.add(geoCoord);
