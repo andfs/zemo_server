@@ -25,6 +25,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 
+import org.jboss.tools.example.forge.annotations.Seguro;
 import org.jboss.tools.example.forge.exceptions.UsuarioExistenteException;
 import org.jboss.tools.example.forge.rest.util.TokenUtil;
 import org.jboss.tools.example.forge.testeForge.model.TokenVO;
@@ -113,6 +114,7 @@ public class UsuarioEndpoint {
 		}
 	}
 
+	@Seguro
 	@DELETE
 	@Path("/{id:[0-9][0-9]*}")
 	public Response deleteById(@PathParam("id") Long id) {
@@ -124,6 +126,7 @@ public class UsuarioEndpoint {
 		return Response.noContent().build();
 	}
 
+	@Seguro
 	@GET
 	@Path("/{id:[0-9][0-9]*}")
 	@Produces("application/json")
@@ -145,6 +148,7 @@ public class UsuarioEndpoint {
 		return Response.ok(entity).build();
 	}
 
+	@Seguro
 	@GET
 	@Produces("application/json")
 	public List<Usuario> listAll(@QueryParam("start") Integer startPosition,
@@ -162,6 +166,7 @@ public class UsuarioEndpoint {
 		return results;
 	}
 
+	@Seguro
 	@PUT
 	@Path("/{id:[0-9][0-9]*}")
 	@Consumes("application/json")

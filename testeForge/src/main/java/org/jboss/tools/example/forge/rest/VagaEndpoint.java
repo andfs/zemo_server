@@ -1,17 +1,21 @@
 package org.jboss.tools.example.forge.rest;
 
+import java.io.StringReader;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.UriInfo;
 
 import org.jboss.tools.example.forge.annotations.Seguro;
 import org.jboss.tools.example.forge.facade.VagaDAO;
@@ -56,19 +60,16 @@ public class VagaEndpoint {
 
 	@GET
 	@Produces("application/json")
-	public List<Vaga> listAll(@QueryParam("start") Integer startPosition, @QueryParam("max") Integer maxResult) 
+	public List<Vaga> listAll(@Context UriInfo info) 
 	{
-//		TypedQuery<Vaga> findAllQuery = em.createQuery(
-//				"SELECT DISTINCT v FROM Vaga v ORDER BY v.id", Vaga.class);
-//		if (startPosition != null) {
-//			findAllQuery.setFirstResult(startPosition);
-//		}
-//		if (maxResult != null) {
-//			findAllQuery.setMaxResults(maxResult);
-//		}
-//		final List<Vaga> results = findAllQuery.getResultList();
-//		return results;
-		
-		return null;
+		JsonReader reader = Json.createReader(new StringReader(info.getQueryParameters().get("params").get(0)));
+		JsonObject object = reader.readObject();
+		JsonObject centre = object.getJsonObject("centre");
+		JsonObject bounds = object.getJsonObject("bounds");
+		Integer zoom = object.getInt("zoom");
+		Double boundingRadius = Double.valueOf(object.get("boundingRadius").toString());
+        reader.close();
+        
+		return vagaDAO.buscarTodasVagasRegiao(centre, bounds, zoom, boundingRadius);
 	}
 }
