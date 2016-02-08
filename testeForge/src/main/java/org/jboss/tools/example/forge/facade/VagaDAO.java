@@ -1,5 +1,6 @@
 package org.jboss.tools.example.forge.facade;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -10,6 +11,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.bson.Document;
+import org.jboss.tools.example.forge.testeForge.model.EnumStatusVaga;
+import org.jboss.tools.example.forge.testeForge.model.EnumTipoVaga;
 import org.jboss.tools.example.forge.testeForge.model.Vaga;
 
 import com.mongodb.BasicDBList;
@@ -108,29 +111,39 @@ public class VagaDAO {
 	public List<Vaga> buscarTodasVagasRegiao(JsonObject centre, JsonObject bounds, Integer zoom, Double boundingRadius) 
 	{
 		MongoCollection<Document> vagasCollection = mongoDatabase.getCollection("vagas");
+		vagasCollection.find();
 		BasicDBList geoCoord = new BasicDBList();
-		geoCoord.add(((JsonObject)bounds.get("northeast")).get("lng"));
-		geoCoord.add(((JsonObject)bounds.get("northeast")).get("lat"));
-		geoCoord.add(((JsonObject)bounds.get("southwest")).get("lng"));
-		geoCoord.add(((JsonObject)bounds.get("southwest")).get("lat"));
+		geoCoord.add(Double.valueOf(centre.get("lng").toString()));
+		geoCoord.add(Double.valueOf(centre.get("lat").toString()));
+//		geoCoord.add(Double.valueOf(((JsonObject)bounds.get("southwest")).get("lng").toString()));
+//		geoCoord.add(Double.valueOf(((JsonObject)bounds.get("southwest")).get("lat").toString()));
 		
 		BasicDBList geoParams = new BasicDBList();
 	    geoParams.add(geoCoord);
 	    geoParams.add(boundingRadius);
 		
-		BasicDBObject query = new BasicDBObject("localizacao", new BasicDBObject("$geoWithin", new BasicDBObject("$center", geoParams)));
+		BasicDBObject query = new BasicDBObject("localizacao", new BasicDBObject("$geoWithin", new BasicDBObject("$centerSphere", geoParams)));
 		
 		FindIterable<Document> result = vagasCollection.find(Filters.and(query, Filters.eq("statusVaga", 0)));
-		
+		List<Vaga> vagas = new ArrayList<>();
 		result.forEach(new Block<Document>() 
 		{
 			public void apply(Document doc) 
 			{
-								
+				Vaga vaga = new Vaga();
+				vaga.setId(doc.getObjectId("_id").toString());
+				vaga.setLatitude(Double.valueOf(((Document)doc.get("localizacao")).get("latitude").toString()));
+				vaga.setLongitude(Double.valueOf(((Document)doc.get("localizacao")).get("longitude").toString()));
+				vaga.setStatusVaga(EnumStatusVaga.getEnum(doc.getDouble("statusVaga").intValue()));
+				vaga.setTipoVaga(EnumTipoVaga.getEnum(doc.getDouble("tipoVaga").intValue()));
+				vaga.setIsVaga(true);
+				vaga.setInfo(vaga.getTipoVaga().getInfo());
+				
+				vagas.add(vaga);
 			}
 		});
 		
-		return null;
+		return vagas;
 	}
 
 }

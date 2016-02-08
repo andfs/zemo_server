@@ -14,7 +14,7 @@ public class Vaga
 {
 	@Id
 	@GeneratedValue
-	private Long id;
+	private String id;
 	
 	@Column
 	private Double latitude;
@@ -30,6 +30,10 @@ public class Vaga
 	@Enumerated(EnumType.ORDINAL)
 	private EnumStatusVaga statusVaga;
 	
+	private Boolean isVaga;
+	
+	private String info;
+	
 	public Vaga() {}
 	
 	public Vaga(Double latitude, Double longitude)
@@ -39,11 +43,11 @@ public class Vaga
 	}
 	
 
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
@@ -77,5 +81,21 @@ public class Vaga
 
 	public void setStatusVaga(EnumStatusVaga statusVaga) {
 		this.statusVaga = statusVaga;
+	}
+
+	public Boolean getIsVaga() {
+		return isVaga;
+	}
+
+	public void setIsVaga(Boolean isVaga) {
+		this.isVaga = isVaga;
+	}
+
+	public String getInfo() {
+		return info;
+	}
+
+	public void setInfo(String info) {
+		this.info = info;
 	}
 }

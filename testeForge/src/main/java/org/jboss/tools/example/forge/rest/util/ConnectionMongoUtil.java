@@ -29,7 +29,7 @@ public class ConnectionMongoUtil
 		logger.info("Conectando ao mongo...");
 		MongoClientOptions m = MongoClientOptions.builder().build();
 		mongoClient = new MongoClient(new ServerAddress("127.0.0.1", 27017), m);
-		mongoDatabase = mongoClient.getDatabase("local");
+		mongoDatabase = mongoClient.getDatabase("test");
 		logger.info("Conectado ao mongo!");
 	}
 	
