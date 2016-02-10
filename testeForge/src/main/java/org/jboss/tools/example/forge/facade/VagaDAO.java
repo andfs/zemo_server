@@ -1,6 +1,7 @@
 package org.jboss.tools.example.forge.facade;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -21,7 +22,6 @@ import com.mongodb.Block;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.Filters;
 
 @Stateless
 public class VagaDAO {
@@ -108,23 +108,20 @@ public class VagaDAO {
 		return pontos;
 	}
 
-	public List<Vaga> buscarTodasVagasRegiao(JsonObject centre, JsonObject bounds, Integer zoom, Double boundingRadius) 
+	public List<Vaga> buscarTodasVagasRegiao(JsonObject bounds) 
 	{
 		MongoCollection<Document> vagasCollection = mongoDatabase.getCollection("vagas");
 		vagasCollection.find();
-		BasicDBList geoCoord = new BasicDBList();
-		geoCoord.add(Double.valueOf(centre.get("lng").toString()));
-		geoCoord.add(Double.valueOf(centre.get("lat").toString()));
-//		geoCoord.add(Double.valueOf(((JsonObject)bounds.get("southwest")).get("lng").toString()));
-//		geoCoord.add(Double.valueOf(((JsonObject)bounds.get("southwest")).get("lat").toString()));
+		LinkedList<double[]> geo = new LinkedList<>();
+		geo.addLast(new double[]{Double.valueOf(((JsonObject)bounds.get("southwest")).get("lat").toString()), Double.valueOf(((JsonObject)bounds.get("southwest")).get("lng").toString())});
+		geo.addLast(new double[]{Double.valueOf(((JsonObject)bounds.get("northeast")).get("lat").toString()), Double.valueOf(((JsonObject)bounds.get("northeast")).get("lng").toString())});
 		
-		BasicDBList geoParams = new BasicDBList();
-	    geoParams.add(geoCoord);
-	    geoParams.add(boundingRadius);
+	    BasicDBObject geometry = new BasicDBObject();
+	    geometry.append("$box", geo);
 		
-		BasicDBObject query = new BasicDBObject("localizacao", new BasicDBObject("$geoWithin", new BasicDBObject("$centerSphere", geoParams)));
+		BasicDBObject query = new BasicDBObject("localizacao", new BasicDBObject("$geoWithin", geometry));
 		
-		FindIterable<Document> result = vagasCollection.find(Filters.and(query, Filters.eq("statusVaga", 0)));
+		FindIterable<Document> result = vagasCollection.find(query);
 		List<Vaga> vagas = new ArrayList<>();
 		result.forEach(new Block<Document>() 
 		{
