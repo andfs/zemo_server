@@ -64,12 +64,9 @@ public class VagaEndpoint {
 	{
 		JsonReader reader = Json.createReader(new StringReader(info.getQueryParameters().get("params").get(0)));
 		JsonObject object = reader.readObject();
-		JsonObject centre = object.getJsonObject("centre");
 		JsonObject bounds = object.getJsonObject("bounds");
-		Integer zoom = object.getInt("zoom");
-		Double boundingRadius = Double.valueOf(object.get("boundingRadius").toString());
         reader.close();
         
-		return vagaDAO.buscarTodasVagasRegiao(centre, bounds, zoom, boundingRadius);
+		return vagaDAO.buscarTodasVagasRegiao(bounds);
 	}
 }
