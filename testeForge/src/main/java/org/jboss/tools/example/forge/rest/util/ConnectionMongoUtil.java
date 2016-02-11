@@ -17,7 +17,6 @@ import com.mongodb.client.MongoDatabase;
 @Singleton
 public class ConnectionMongoUtil 
 {
-	
 	private MongoClient mongoClient;
 	private MongoDatabase mongoDatabase;
 	

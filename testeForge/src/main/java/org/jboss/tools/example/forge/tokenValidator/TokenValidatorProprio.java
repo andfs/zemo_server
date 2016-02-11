@@ -5,11 +5,11 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.ResourceBundle;
 
+import javax.enterprise.inject.spi.CDI;
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
 
+import org.jboss.tools.example.forge.facade.UsuarioDAO;
 import org.jboss.tools.example.forge.testeForge.model.Usuario;
 
 import io.jsonwebtoken.Claims;
@@ -23,9 +23,11 @@ class TokenValidatorProprio implements TokenValidator{
 	private String issuer = "zemoIssuer";
 	private String aud = "zemoAud";
 	
+	private UsuarioDAO usuarioDAO = CDI.current().select(UsuarioDAO.class).get();
+	
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Long validate(String token, EntityManager em) throws TokenNotValidException 
+	public String validate(String token) throws TokenNotValidException 
 	{
 		try
 		{
@@ -41,11 +43,7 @@ class TokenValidatorProprio implements TokenValidator{
 			
 			if(claims.get(PayloadBody.AUDIENCE.name()).equals(aud) && claims.get(PayloadBody.ISSUER.name()).equals(issuer))
 			{
-				Query q = em.createQuery("from Usuario u where u.id = :id and u.senha = :senha and u.email = :email");
-				q.setParameter("id", Long.valueOf(claims.get(PayloadBody.ID.name()).toString()));
-				q.setParameter("email", claims.get(PayloadBody.EMAIL.name()));
-				q.setParameter("senha", claims.get(PayloadBody.SENHA.name()));
-				Usuario result = (Usuario) q.getSingleResult();
+				Usuario result = usuarioDAO.buscarUsuario(claims.get(PayloadBody.ID.name()).toString(), claims.get(PayloadBody.EMAIL.name()).toString(), claims.get(PayloadBody.SENHA.name()).toString());
 				if(result == null || result.getId() == null) {
 					throw new TokenNotValidException();
 				}

@@ -3,8 +3,6 @@ package org.jboss.tools.example.forge.rest.filters;
 import java.io.IOException;
 
 import javax.annotation.Priority;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -24,9 +22,6 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 	
 	private TokenUtil tokenUtil = new TokenUtil();
 	
-	@PersistenceContext(unitName = "testeForge-persistence-unit")
-	private EntityManager em;
-
 	public void filter(ContainerRequestContext requestContext) throws IOException 
 	{
 		String authorizationHeader = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
@@ -41,7 +36,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 		
 		try 
 		{
-			Long idUser = tokenUtil.validarToken(token, tipoLogin, em);
+			String idUser = tokenUtil.validarToken(token, tipoLogin);
 			requestContext.setSecurityContext(new CustomSecurity(idUser));
         } 
 		catch (Exception e) 

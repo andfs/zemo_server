@@ -1,7 +1,5 @@
 package org.jboss.tools.example.forge.rest.util;
 
-import javax.persistence.EntityManager;
-
 import org.jboss.tools.example.forge.testeForge.model.Usuario;
 import org.jboss.tools.example.forge.tokenValidator.TokenValidator;
 import org.jboss.tools.example.forge.tokenValidator.TokenValidatorFactory;
@@ -12,9 +10,9 @@ public class TokenUtil
 		return TokenValidatorFactory.createToken(user);
 	}
 
-	public Long validarToken(String token, String tipoLogin, EntityManager em) throws Exception
+	public String validarToken(String token, String tipoLogin) throws Exception
 	{
 		TokenValidator tokenValidator = TokenValidatorFactory.createTokenValidator(tipoLogin);
-		return tokenValidator.validate(token, em);
+		return tokenValidator.validate(token);
 	}
 }

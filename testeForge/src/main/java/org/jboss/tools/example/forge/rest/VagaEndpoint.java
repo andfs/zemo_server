@@ -19,7 +19,6 @@ import javax.ws.rs.core.UriInfo;
 
 import org.jboss.tools.example.forge.annotations.Seguro;
 import org.jboss.tools.example.forge.facade.VagaDAO;
-import org.jboss.tools.example.forge.testeForge.model.EnumStatusVaga;
 import org.jboss.tools.example.forge.testeForge.model.PontosJson;
 import org.jboss.tools.example.forge.testeForge.model.Vaga;
 import org.jboss.tools.example.forge.testeForge.model.VagaVO;
@@ -40,8 +39,6 @@ public class VagaEndpoint {
 	public Response liberarVaga(@Context SecurityContext securityContext, VagaVO entity) 
 	{
 		Vaga vaga = new Vaga(entity.getLatitude(), entity.getLongitude());
-		vaga.setStatusVaga(EnumStatusVaga.DESOCUPADA);
-		
 		Long pontos = vagaDAO.liberarVaga(vaga, securityContext.getUserPrincipal().getName());
 		
 		return Response.ok(new PontosJson(pontos)).build();
@@ -53,7 +50,6 @@ public class VagaEndpoint {
 	public Long estacionar(@Context SecurityContext securityContext, VagaVO entity) 
 	{
 		Vaga vaga = new Vaga(entity.getLatitude(), entity.getLongitude());
-		vaga.setStatusVaga(EnumStatusVaga.OCUPADA);
 		Long pontos = vagaDAO.estacionar(vaga, securityContext.getUserPrincipal().getName());
 		return pontos;
 	}
@@ -66,7 +62,7 @@ public class VagaEndpoint {
 		JsonObject object = reader.readObject();
 		JsonObject bounds = object.getJsonObject("bounds");
         reader.close();
-        
+        //TODO trazer estacionamentos tambem
 		return vagaDAO.buscarTodasVagasRegiao(bounds);
 	}
 }

@@ -3,19 +3,11 @@ package org.jboss.tools.example.forge.rest;
 import java.util.List;
 
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.OptimisticLockException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -27,6 +19,7 @@ import javax.ws.rs.core.SecurityContext;
 
 import org.jboss.tools.example.forge.annotations.Seguro;
 import org.jboss.tools.example.forge.exceptions.UsuarioExistenteException;
+import org.jboss.tools.example.forge.facade.UsuarioDAO;
 import org.jboss.tools.example.forge.rest.util.TokenUtil;
 import org.jboss.tools.example.forge.testeForge.model.TokenVO;
 import org.jboss.tools.example.forge.testeForge.model.Usuario;
@@ -39,8 +32,9 @@ import org.jboss.tools.example.forge.testeForge.model.UsuarioVOCreate;
 @Stateless
 @Path("/usuarios")
 public class UsuarioEndpoint {
-	@PersistenceContext(unitName = "testeForge-persistence-unit")
-	private EntityManager em;
+
+	@Inject
+	private UsuarioDAO usuarioDAO;
 	
 	private TokenUtil tokenUtil = new TokenUtil();
 
@@ -53,7 +47,7 @@ public class UsuarioEndpoint {
 		{
 			validarEmailExistente(entity.getEmail());
 			Usuario user = new Usuario(entity);
-			em.persist(user);
+			usuarioDAO.persist(user);
 			
 			String token = tokenUtil.gerarToken(user);
 			
@@ -86,12 +80,7 @@ public class UsuarioEndpoint {
 
 	private Usuario login(UsuarioVO entity) throws Exception 
 	{
-		CriteriaBuilder builder = em.getEntityManagerFactory().getCriteriaBuilder();
-		CriteriaQuery<Usuario> criteriaQuery = builder.createQuery(Usuario.class);
-		Root<Usuario> root = criteriaQuery.from(Usuario.class);
-		criteriaQuery.where(builder.and(builder.equal(root.get("email"), entity.getEmail()), builder.equal(root.get("senha"), entity.getSenha())));
-		TypedQuery<Usuario> q = em.createQuery(criteriaQuery);
-		Usuario u = q.getSingleResult();
+		Usuario u = usuarioDAO.buscarUsuario(entity.getEmail(), entity.getSenha());
 		if(u == null) {
 			throw new Exception();
 		}
@@ -101,13 +90,7 @@ public class UsuarioEndpoint {
 
 	private void validarEmailExistente(String login) throws UsuarioExistenteException 
 	{
-		CriteriaBuilder builder = em.getEntityManagerFactory().getCriteriaBuilder();
-		CriteriaQuery<Long> criteriaQuery = builder.createQuery(Long.class);
-		Root<Usuario> root = criteriaQuery.from(Usuario.class);
-		criteriaQuery.select(builder.count(root));
-		criteriaQuery.where(builder.equal(root.get("email"), login));
-		TypedQuery<Long> q = em.createQuery(criteriaQuery);
-		Long result = q.getSingleResult();
+		Long result = usuarioDAO.countUserByEmail(login);
 		
 		if(result > 0) {
 			throw new UsuarioExistenteException();
@@ -117,12 +100,8 @@ public class UsuarioEndpoint {
 	@Seguro
 	@DELETE
 	@Path("/{id:[0-9][0-9]*}")
-	public Response deleteById(@PathParam("id") Long id) {
-		Usuario entity = em.find(Usuario.class, id);
-		if (entity == null) {
-			return Response.status(Status.NOT_FOUND).build();
-		}
-		em.remove(entity);
+	public Response deleteById(@PathParam("id") String id) {
+		usuarioDAO.delete(id);
 		return Response.noContent().build();
 	}
 
@@ -130,18 +109,10 @@ public class UsuarioEndpoint {
 	@GET
 	@Path("/{id:[0-9][0-9]*}")
 	@Produces("application/json")
-	public Response findById(@PathParam("id") Long id) {
-		TypedQuery<Usuario> findByIdQuery = em
-				.createQuery(
-						"SELECT DISTINCT u FROM Usuario u WHERE u.id = :entityId ORDER BY u.id",
-						Usuario.class);
-		findByIdQuery.setParameter("entityId", id);
-		Usuario entity;
-		try {
-			entity = findByIdQuery.getSingleResult();
-		} catch (NoResultException nre) {
-			entity = null;
-		}
+	public Response findById(@PathParam("id") String id) 
+	{
+		Usuario entity = usuarioDAO.findById(id);
+		
 		if (entity == null) {
 			return Response.status(Status.NOT_FOUND).build();
 		}
@@ -151,45 +122,36 @@ public class UsuarioEndpoint {
 	@Seguro
 	@GET
 	@Produces("application/json")
-	public List<Usuario> listAll(@QueryParam("start") Integer startPosition,
-			@QueryParam("max") Integer maxResult) {
-		TypedQuery<Usuario> findAllQuery = em
-				.createQuery("SELECT DISTINCT u FROM Usuario u ORDER BY u.id",
-						Usuario.class);
-		if (startPosition != null) {
-			findAllQuery.setFirstResult(startPosition);
-		}
-		if (maxResult != null) {
-			findAllQuery.setMaxResults(maxResult);
-		}
-		final List<Usuario> results = findAllQuery.getResultList();
+	public List<Usuario> listAll(@QueryParam("start") Integer startPosition, @QueryParam("max") Integer maxResult) 
+	{
+		List<Usuario> results = usuarioDAO.listAll(startPosition, maxResult);
 		return results;
 	}
 
-	@Seguro
-	@PUT
-	@Path("/{id:[0-9][0-9]*}")
-	@Consumes("application/json")
-	public Response update(@PathParam("id") Long id, Usuario entity) {
-		if (entity == null) {
-			return Response.status(Status.BAD_REQUEST).build();
-		}
-		if (id == null) {
-			return Response.status(Status.BAD_REQUEST).build();
-		}
-		if (!id.equals(entity.getId())) {
-			return Response.status(Status.CONFLICT).entity(entity).build();
-		}
-		if (em.find(Usuario.class, id) == null) {
-			return Response.status(Status.NOT_FOUND).build();
-		}
-		try {
-			entity = em.merge(entity);
-		} catch (OptimisticLockException e) {
-			return Response.status(Response.Status.CONFLICT)
-					.entity(e.getEntity()).build();
-		}
-
-		return Response.noContent().build();
-	}
+//	@Seguro
+//	@PUT
+//	@Path("/{id:[0-9][0-9]*}")
+//	@Consumes("application/json")
+//	public Response update(@PathParam("id") String id, Usuario entity) {
+//		if (entity == null) {
+//			return Response.status(Status.BAD_REQUEST).build();
+//		}
+//		if (id == null) {
+//			return Response.status(Status.BAD_REQUEST).build();
+//		}
+//		if (!id.equals(entity.getId())) {
+//			return Response.status(Status.CONFLICT).entity(entity).build();
+//		}
+//		if (em.find(Usuario.class, id) == null) {
+//			return Response.status(Status.NOT_FOUND).build();
+//		}
+//		try {
+//			entity = em.merge(entity);
+//		} catch (OptimisticLockException e) {
+//			return Response.status(Response.Status.CONFLICT)
+//					.entity(e.getEntity()).build();
+//		}
+//
+//		return Response.noContent().build();
+//	}
 }

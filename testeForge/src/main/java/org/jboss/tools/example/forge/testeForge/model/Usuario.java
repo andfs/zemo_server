@@ -12,7 +12,7 @@ public class Usuario
 {
 	@Id
 	@GeneratedValue
-	private Long id;
+	private String id;
 	
 	@Column
 	private String email;
@@ -38,11 +38,11 @@ public class Usuario
 		this.email = entity.getEmail();
 	}
 
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 

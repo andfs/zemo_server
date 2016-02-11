@@ -7,16 +7,13 @@ import java.util.List;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.json.JsonObject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.jboss.tools.example.forge.testeForge.model.EnumStatusVaga;
 import org.jboss.tools.example.forge.testeForge.model.EnumTipoVaga;
 import org.jboss.tools.example.forge.testeForge.model.Vaga;
 
-import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.Block;
 import com.mongodb.client.FindIterable;
@@ -26,84 +23,126 @@ import com.mongodb.client.MongoDatabase;
 @Stateless
 public class VagaDAO {
 	
-	@PersistenceContext(unitName = "testeForge-persistence-unit")
-	private EntityManager em;
-	
 	@Inject
 	private MongoDatabase mongoDatabase;
 
 	public Long liberarVaga(Vaga vaga, String idUsuario) 
 	{
-		em.persist(vaga);
-		Query query = em.createQuery("select pontos from Usuario u where u.id = :id");
-		query.setParameter("id", Long.valueOf(idUsuario));
-		Long pontos = (Long) query.getSingleResult();
-		if(pontos == null) {
-			pontos = 3l;
-		}
+		updateInsertVaga(vaga, EnumStatusVaga.DESOCUPADA.ordinal());
 		
-		if(pontos > 10)
+		MongoCollection<Document> usuariosCollection = mongoDatabase.getCollection("usuarios");
+		Document queryUsuario = new Document();
+		queryUsuario.put("_id", new ObjectId(idUsuario));
+		FindIterable<Document> result = usuariosCollection.find(queryUsuario);
+		Long pontos = 0l;
+		if(result.iterator().hasNext())
 		{
-			pontos += 5l;
+			Document usuario = result.iterator().next();
+			pontos = usuario.getLong("pontos");
+			
+			if(pontos == null) {
+				pontos = 3l;
+			}
+			
+			if(pontos > 10)
+			{
+				pontos += 5l;
+			}
+			else if(pontos > 30)
+			{
+				pontos += 4l;
+			}
+			else if(pontos > 50)
+			{
+				pontos += 3l;
+			}
+			else if(pontos > 100)
+			{
+				pontos += 2l;
+			}
+			else {
+				pontos++;
+			}
+			
+			usuario.put("pontos", pontos);
+			
+			usuariosCollection.updateOne(queryUsuario, usuario);
 		}
-		else if(pontos > 30)
-		{
-			pontos += 4l;
-		}
-		else if(pontos > 50)
-		{
-			pontos += 3l;
-		}
-		else if(pontos > 100)
-		{
-			pontos += 2l;
-		}
-		else {
-			pontos++;
-		}
-		
-		query = em.createQuery("update Usuario u set u.pontos = :pontos where u.id = :id");
-		query.setParameter("pontos", pontos);
-		query.setParameter("id", Long.valueOf(idUsuario));
-		query.executeUpdate();
 		
 		return pontos;
 	}
 
+	private void updateInsertVaga(Vaga vaga, int statusVaga) {
+		MongoCollection<Document> vagasCollection = mongoDatabase.getCollection("vagas");
+		Document query = new Document();
+		query.put("localizacao.latitude", vaga.getLatitude());
+		query.put("localizacao.longitude", vaga.getLatitude());
+		FindIterable<Document> result = vagasCollection.find(query);
+		boolean achou = false;
+		while(result.iterator().hasNext())
+		{
+			achou = true;
+			Document doc = result.iterator().next();
+			doc.put("statusVaga", statusVaga);
+			vagasCollection.updateOne(query, doc);
+		}
+		if(!achou)
+		{
+			Document localizacao = new Document();
+			localizacao.put("latitude", vaga.getLatitude());
+			localizacao.put("longitude", vaga.getLatitude());
+			Document vagaDoc = new Document();
+			vagaDoc.put("localizacao", localizacao);
+			vagaDoc.put("statusVaga", statusVaga);
+			vagaDoc.put("isVaga", true);
+			vagaDoc.put("tipoVaga", vaga.getTipoVaga().ordinal());
+			
+			vagasCollection.insertOne(vagaDoc);
+		}
+	}
+
 	public Long estacionar(Vaga vaga, String idUsuario) 
 	{
-		em.persist(vaga);
-		Query query = em.createQuery("select pontos from Usuario u where u.id = :id");
-		query.setParameter("id", Long.valueOf(idUsuario));
-		Long pontos = (Long) query.getSingleResult();
-		if(pontos == null) {
-			pontos = 0l;
-		}
+		updateInsertVaga(vaga, EnumStatusVaga.OCUPADA.ordinal());
 		
-		if(pontos > 10)
+		MongoCollection<Document> usuariosCollection = mongoDatabase.getCollection("usuarios");
+		Document queryUsuario = new Document();
+		queryUsuario.put("_id", new ObjectId(idUsuario));
+		FindIterable<Document> result = usuariosCollection.find(queryUsuario);
+		Long pontos = 0l;
+		if(result.iterator().hasNext())
 		{
-			pontos += 5l;
+			Document usuario = result.iterator().next();
+			pontos = usuario.getLong("pontos");
+			
+			if(pontos == null) {
+				pontos = 0l;
+			}
+			
+			if(pontos > 10)
+			{
+				pontos += 5l;
+			}
+			else if(pontos > 30)
+			{
+				pontos += 4l;
+			}
+			else if(pontos > 50)
+			{
+				pontos += 3l;
+			}
+			else if(pontos > 100)
+			{
+				pontos += 2l;
+			}
+			else {
+				pontos++;
+			}
+			
+			usuario.put("pontos", pontos);
+			
+			usuariosCollection.updateOne(queryUsuario, usuario);
 		}
-		else if(pontos > 30)
-		{
-			pontos += 4l;
-		}
-		else if(pontos > 50)
-		{
-			pontos += 3l;
-		}
-		else if(pontos > 100)
-		{
-			pontos += 2l;
-		}
-		else {
-			pontos++;
-		}
-		
-		query = em.createQuery("update Usuario u set u.pontos = :pontos where u.id = :id");
-		query.setParameter("pontos", pontos);
-		query.setParameter("id", Long.valueOf(idUsuario));
-		query.executeUpdate();
 		
 		return pontos;
 	}

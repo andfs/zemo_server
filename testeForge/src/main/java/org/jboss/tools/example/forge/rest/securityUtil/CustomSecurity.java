@@ -6,9 +6,9 @@ import javax.ws.rs.core.SecurityContext;
 
 public class CustomSecurity implements SecurityContext {
 
-	private Long idUser;
+	private String idUser;
 	
-	public CustomSecurity(Long idUser) {
+	public CustomSecurity(String idUser) {
 		this.idUser = idUser;
 	}
 	
