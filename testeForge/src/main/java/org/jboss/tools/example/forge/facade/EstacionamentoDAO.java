@@ -1,6 +1,7 @@
 package org.jboss.tools.example.forge.facade;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -11,6 +12,8 @@ import org.bson.Document;
 import org.jboss.tools.example.forge.testeForge.model.Estacionamento;
 import org.jboss.tools.example.forge.testeForge.model.Vaga;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.Block;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -57,10 +60,20 @@ public class EstacionamentoDAO {
 		return result;
 	}
 
-	public List<Estacionamento> buscarTodosEstacionamentosRegiao() 
+	public List<Estacionamento> buscarTodosEstacionamentos(JsonObject posicaoAtual) 
 	{
-		MongoCollection<Document> usuariosCollection = mongoDatabase.getCollection("estacionamentos");
-		FindIterable<Document> list = usuariosCollection.find();
+		MongoCollection<Document> estacionamentosCollection = mongoDatabase.getCollection("estacionamentos");
+		
+		LinkedList<double[]> geo = new LinkedList<>();
+		geo.addLast(new double[]{Double.valueOf(posicaoAtual.get("latitude").toString()), Double.valueOf(posicaoAtual.get("longitude").toString())});
+		
+		
+		Document near = new Document();
+		near.append("$near", geo);
+		Document query = new Document();
+		query.append("localizacao", near);
+		
+		FindIterable<Document> list = estacionamentosCollection.find(query);
 		List<Estacionamento> result = new ArrayList<>(); 
 		while(list.iterator().hasNext())
 		{
@@ -80,9 +93,37 @@ public class EstacionamentoDAO {
 		return result;
 	}
 
-	public List<Vaga> buscarEstacionamentosRegiao(JsonObject bounds) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Vaga> buscarEstacionamentosRegiao(JsonObject bounds) 
+	{
+		MongoCollection<Document> estacionamentosCollection = mongoDatabase.getCollection("estacionamentos");
+		
+		LinkedList<double[]> geo = new LinkedList<>();
+		geo.addLast(new double[]{Double.valueOf(((JsonObject)bounds.get("southwest")).get("lat").toString()), Double.valueOf(((JsonObject)bounds.get("southwest")).get("lng").toString())});
+		geo.addLast(new double[]{Double.valueOf(((JsonObject)bounds.get("northeast")).get("lat").toString()), Double.valueOf(((JsonObject)bounds.get("northeast")).get("lng").toString())});
+		
+	    BasicDBObject geometry = new BasicDBObject();
+	    geometry.append("$box", geo);
+		
+		BasicDBObject query = new BasicDBObject("localizacao", new BasicDBObject("$geoWithin", geometry));
+		
+		FindIterable<Document> result = estacionamentosCollection.find(query);
+		List<Vaga> vagas = new ArrayList<>();
+		result.forEach(new Block<Document>() 
+		{
+			public void apply(Document doc) 
+			{
+				Vaga vaga = new Vaga();
+				vaga.setId(doc.getObjectId("_id").toString());
+				vaga.setLatitude(Double.valueOf(((Document)doc.get("localizacao")).get("latitude").toString()));
+				vaga.setLongitude(Double.valueOf(((Document)doc.get("localizacao")).get("longitude").toString()));
+				vaga.setIsVaga(false);
+				vaga.setInfo(doc.getString("nome") + " - " + doc.getString("valorHora")+"\\h" + " - " + doc.getString("valorFracao") + " fração");
+				
+				vagas.add(vaga);
+			}
+		});
+		
+		return vagas;
 	}
 
 }

@@ -142,7 +142,7 @@ public class VagaDAO {
 	public List<Vaga> buscarTodasVagasRegiao(JsonObject bounds) 
 	{
 		MongoCollection<Document> vagasCollection = mongoDatabase.getCollection("vagas");
-		vagasCollection.find();
+		
 		LinkedList<double[]> geo = new LinkedList<>();
 		geo.addLast(new double[]{Double.valueOf(((JsonObject)bounds.get("southwest")).get("lat").toString()), Double.valueOf(((JsonObject)bounds.get("southwest")).get("lng").toString())});
 		geo.addLast(new double[]{Double.valueOf(((JsonObject)bounds.get("northeast")).get("lat").toString()), Double.valueOf(((JsonObject)bounds.get("northeast")).get("lng").toString())});
