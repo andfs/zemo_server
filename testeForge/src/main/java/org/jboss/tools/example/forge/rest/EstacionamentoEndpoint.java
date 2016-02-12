@@ -52,22 +52,10 @@ public class EstacionamentoEndpoint {
 	@GET
 	@Path("/{id:[0-9][0-9]*}")
 	@Produces("application/json")
-	public Response findById(@PathParam("id") Long id) {
-//		TypedQuery<Estacionamento> findByIdQuery = em
-//				.createQuery(
-//						"SELECT DISTINCT e FROM Estacionamento e WHERE e.id = :entityId ORDER BY e.id",
-//						Estacionamento.class);
-//		findByIdQuery.setParameter("entityId", id);
-//		Estacionamento entity;
-//		try {
-//			entity = findByIdQuery.getSingleResult();
-//		} catch (NoResultException nre) {
-//			entity = null;
-//		}
-//		if (entity == null) {
-//			return Response.status(Status.NOT_FOUND).build();
-//		}
-		return Response.ok(/*entity*/).build();
+	public Response findById(@PathParam("id") String id) 
+	{
+		Estacionamento entity = estacionamentoDAO.find(id);
+		return Response.ok(entity).build();
 	}
 
 	@GET
