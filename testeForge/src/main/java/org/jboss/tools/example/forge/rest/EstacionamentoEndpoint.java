@@ -1,12 +1,8 @@
 package org.jboss.tools.example.forge.rest;
 
-import java.io.StringReader;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -14,11 +10,9 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
 
 import org.jboss.tools.example.forge.facade.EstacionamentoDAO;
 import org.jboss.tools.example.forge.testeForge.model.Estacionamento;
@@ -46,7 +40,7 @@ public class EstacionamentoEndpoint {
 
 	@DELETE
 	@Path("/{id:[0-9][0-9]*}")
-	public Response deleteById(@PathParam("id") Long id) {
+	public Response deleteById(@PathParam("id") String id) {
 		Estacionamento entity = estacionamentoDAO.find(id);
 		if (entity == null) {
 			return Response.status(Status.NOT_FOUND).build();
@@ -78,14 +72,9 @@ public class EstacionamentoEndpoint {
 
 	@GET
 	@Produces("application/json")
-	public List<Estacionamento> listAll(@Context UriInfo info) 
+	public List<Estacionamento> listAll() 
 	{
-		JsonReader reader = Json.createReader(new StringReader(info.getQueryParameters().get("params").get(0)));
-		JsonObject object = reader.readObject();
-		JsonObject bounds = object.getJsonObject("bounds");
-        reader.close();
-        
-		return estacionamentoDAO.buscarTodosEstacionamentosRegiao(bounds);
+		return estacionamentoDAO.buscarTodosEstacionamentosRegiao();
 	}
 
 //	@PUT

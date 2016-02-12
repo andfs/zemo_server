@@ -44,14 +44,16 @@ public class VagaEndpoint {
 		return Response.ok(new PontosJson(pontos)).build();
 	}
 	
+	@Seguro
 	@POST
 	@Path("/estacionar")
 	@Consumes("application/json")
-	public Long estacionar(@Context SecurityContext securityContext, VagaVO entity) 
+	public Response estacionar(@Context SecurityContext securityContext, VagaVO entity) 
 	{
-		Vaga vaga = new Vaga(entity.getLatitude(), entity.getLongitude());
+		Vaga vaga = new Vaga(entity.getLatitude(), entity.getLongitude(), entity.getTipoVaga());
 		Long pontos = vagaDAO.estacionar(vaga, securityContext.getUserPrincipal().getName());
-		return pontos;
+		
+		return Response.ok(new PontosJson(pontos)).build();
 	}
 
 	@GET

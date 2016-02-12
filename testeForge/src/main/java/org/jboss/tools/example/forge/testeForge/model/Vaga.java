@@ -36,12 +36,18 @@ public class Vaga
 	
 	public Vaga() {}
 	
-	public Vaga(Double latitude, Double longitude)
+	public Vaga(Double latitude, Double longitude, Integer tipoVaga)
 	{
 		this.latitude  = latitude;
 		this.longitude = longitude;
+		this.tipoVaga = EnumTipoVaga.getEnum(tipoVaga);
 	}
 	
+
+	public Vaga(Double latitude, Double longitude) {
+		this.latitude  = latitude;
+		this.longitude = longitude;
+	}
 
 	public String getId() {
 		return id;

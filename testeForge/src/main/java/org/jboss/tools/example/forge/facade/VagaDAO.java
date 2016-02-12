@@ -64,9 +64,7 @@ public class VagaDAO {
 				pontos++;
 			}
 			
-			usuario.put("pontos", pontos);
-			
-			usuariosCollection.updateOne(queryUsuario, usuario);
+			usuariosCollection.updateOne(queryUsuario, new Document("$set", new Document("pontos", pontos)));
 		}
 		
 		return pontos;
@@ -77,16 +75,12 @@ public class VagaDAO {
 		Document query = new Document();
 		query.put("localizacao.latitude", vaga.getLatitude());
 		query.put("localizacao.longitude", vaga.getLatitude());
-		FindIterable<Document> result = vagasCollection.find(query);
-		boolean achou = false;
-		while(result.iterator().hasNext())
+		Long result = vagasCollection.count(query);
+		if(result > 0)
 		{
-			achou = true;
-			Document doc = result.iterator().next();
-			doc.put("statusVaga", statusVaga);
-			vagasCollection.updateOne(query, doc);
+			vagasCollection.updateOne(query, new Document("$set", new Document("statusVaga", statusVaga)));
 		}
-		if(!achou)
+		else
 		{
 			Document localizacao = new Document();
 			localizacao.put("latitude", vaga.getLatitude());
@@ -139,9 +133,7 @@ public class VagaDAO {
 				pontos++;
 			}
 			
-			usuario.put("pontos", pontos);
-			
-			usuariosCollection.updateOne(queryUsuario, usuario);
+			usuariosCollection.updateOne(queryUsuario, new Document("$set", new Document("pontos", pontos)));
 		}
 		
 		return pontos;

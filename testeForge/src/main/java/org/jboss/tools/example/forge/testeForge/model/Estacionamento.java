@@ -1,7 +1,5 @@
 package org.jboss.tools.example.forge.testeForge.model;
 
-import java.math.BigDecimal;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -13,7 +11,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Estacionamento {
 	@Id
 	@GeneratedValue
-	private Long id;
+	private String id;
 
 	@Column
 	private String nome;
@@ -28,10 +26,10 @@ public class Estacionamento {
 	private String n;
 
 	@Column
-	private BigDecimal valorHora;
+	private Double valorHora;
 
 	@Column
-	private BigDecimal valorFracao;
+	private Double valorFracao;
 
 	@Column
 	private Long latitude;
@@ -39,11 +37,11 @@ public class Estacionamento {
 	@Column
 	private Long longitude;
 
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
@@ -71,19 +69,19 @@ public class Estacionamento {
 		this.endereco = endereco;
 	}
 
-	public BigDecimal getValorHora() {
+	public Double getValorHora() {
 		return valorHora;
 	}
 
-	public void setValorHora(BigDecimal valorHora) {
+	public void setValorHora(Double valorHora) {
 		this.valorHora = valorHora;
 	}
 
-	public BigDecimal getValorFracao() {
+	public Double getValorFracao() {
 		return valorFracao;
 	}
 
-	public void setValorFracao(BigDecimal valorFracao) {
+	public void setValorFracao(Double valorFracao) {
 		this.valorFracao = valorFracao;
 	}
 
