@@ -18,6 +18,7 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import org.jboss.tools.example.forge.annotations.Seguro;
+import org.jboss.tools.example.forge.facade.EstacionamentoDAO;
 import org.jboss.tools.example.forge.facade.VagaDAO;
 import org.jboss.tools.example.forge.testeForge.model.PontosJson;
 import org.jboss.tools.example.forge.testeForge.model.Vaga;
@@ -31,6 +32,9 @@ public class VagaEndpoint {
 	
 	@Inject
 	private VagaDAO vagaDAO;
+	
+	@Inject
+	private EstacionamentoDAO estacionamentoDAO;
 	
 	@Seguro
 	@POST
@@ -64,7 +68,11 @@ public class VagaEndpoint {
 		JsonObject object = reader.readObject();
 		JsonObject bounds = object.getJsonObject("bounds");
         reader.close();
-        //TODO trazer estacionamentos tambem
-		return vagaDAO.buscarTodasVagasRegiao(bounds);
+        List<Vaga> vagas = vagaDAO.buscarTodasVagasRegiao(bounds);
+        
+        List<Vaga> estacionamentos = estacionamentoDAO.buscarEstacionamentosRegiao(bounds);
+        vagas.addAll(estacionamentos);
+        
+		return vagas;
 	}
 }

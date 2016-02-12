@@ -5,9 +5,11 @@ import java.util.List;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.json.JsonObject;
 
 import org.bson.Document;
 import org.jboss.tools.example.forge.testeForge.model.Estacionamento;
+import org.jboss.tools.example.forge.testeForge.model.Vaga;
 
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
@@ -76,6 +78,11 @@ public class EstacionamentoDAO {
 			result.add(estacionamento);
 		}
 		return result;
+	}
+
+	public List<Vaga> buscarEstacionamentosRegiao(JsonObject bounds) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
